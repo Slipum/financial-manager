@@ -1,5 +1,9 @@
-import { Calendar } from '@/components';
+import { CardTransaction } from '@/components';
 
 export default function Home() {
-	return <></>;
+	return (
+		<>
+			<CardTransaction />
+		</>
+	);
 }
