@@ -45,6 +45,9 @@ export class OperationDto {
   @IsNotEmpty({ message: 'цена обязательна' })
   value: number;
 
-  @IsEnum(TypeOperations)
+  @IsEnum(TypeOperations, {
+    message:
+      'Тип операции должен быть одним из DELIVERY_FOODS, PERSONAL_PURCHASES, OTHERS',
+  })
   type: TypeOperations;
 }
