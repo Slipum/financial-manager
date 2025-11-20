@@ -11,8 +11,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FinanceService } from './finance.service';
-import { Operation, Transaction } from '../../generated/prisma/client';
-import { DeleteTransactionDto } from './dto/transaction.dto';
+import { Transaction } from '../../generated/prisma/client';
+import {
+  CreateTransactionDto,
+  DeleteTransactionDto,
+} from './dto/transaction.dto';
 
 @Controller('finance')
 export class FinanceController {
@@ -26,18 +29,25 @@ export class FinanceController {
   }
 
   @Post()
+  @UsePipes(new ValidationPipe({ transform: true }))
   async createTransaction(
-    @Body() data: { closeDate: string; operations?: Operation[] },
+    @Body()
+    data: CreateTransactionDto,
   ): Promise<Transaction> {
-    const { closeDate, operations } = data;
     try {
+      const prismaOperations = data.operations
+        ? {
+            create: data.operations.map((op) => ({
+              label: op.label,
+              value: op.value,
+              type: op.type,
+            })),
+          }
+        : undefined;
       const result = await this.financeService.createTransaction({
-        closeDate,
-        operations: operations
-          ? {
-              create: operations,
-            }
-          : undefined,
+        value: data.value,
+        closeDate: new Date(data.closeDate),
+        operations: prismaOperations,
       });
       this.logger.log('Успешное создание транзакции');
       return result;
@@ -45,10 +55,10 @@ export class FinanceController {
       this.logger.error('Ошибка при создании транзакции');
       throw new HttpException(
         {
-          status: HttpStatus.UNAUTHORIZED,
+          status: HttpStatus.BAD_REQUEST,
           error: 'Транзакция не создалась',
         },
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.BAD_REQUEST,
         {
           cause: error,
         },

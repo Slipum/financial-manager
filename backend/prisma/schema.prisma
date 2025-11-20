@@ -18,7 +18,7 @@ model Operation {
   id            Int            @id @unique @default(autoincrement())
   label         String
   value         Int
-  type          TypeOperations
+  type          TypeOperations @default(OTHERS)
   createDate    DateTime       @default(now()) @map("create_date")
   transactions  Transaction?   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   transactionId Int?
@@ -26,6 +26,7 @@ model Operation {
 
 model Transaction {
   id         Int         @id @unique @default(autoincrement())
+  value      Int
   operations Operation[]
   createDate DateTime    @default(now()) @map("create_date")
   closeDate  DateTime    @map("close_date")
