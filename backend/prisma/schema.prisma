@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TypeOperations {
+  DELIVERY_FOODS
+  PERSONAL_PURCHASES
+  OTHERS
+}
+
+model Operation {
+  id            Int            @id @unique @default(autoincrement())
+  label         String
+  value         Int
+  type          TypeOperations
+  createDate    DateTime       @default(now()) @map("create_date")
+  transactions  Transaction?   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId Int?
+}
+
+model Transaction {
+  id         Int         @id @unique @default(autoincrement())
+  operations Operation[]
+  createDate DateTime    @default(now()) @map("create_date")
+  closeDate  DateTime    @map("close_date")
+}
