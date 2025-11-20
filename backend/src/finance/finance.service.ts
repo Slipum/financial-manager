@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, Transaction } from '../../generated/prisma/client';
+import { Operation, Prisma, Transaction } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -24,5 +24,22 @@ export class FinanceService {
     return this.prisma.transaction.delete({
       where,
     });
+  }
+
+  async getPriceById(
+    id: Prisma.TransactionWhereUniqueInput,
+  ): Promise<(Transaction & { operations: Operation[] }) | null> {
+    return this.prisma.transaction.findUnique({
+      where: id,
+      include: {
+        operations: true,
+      },
+    });
+  }
+
+  async createOperationByTransaction(
+    data: Prisma.OperationCreateManyInput,
+  ): Promise<Operation> {
+    return this.prisma.operation.create({ data });
   }
 }

@@ -6,16 +6,19 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Param,
+  ParseIntPipe,
   Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { FinanceService } from './finance.service';
-import { Transaction } from '../../generated/prisma/client';
+import { Operation, Transaction } from '../../generated/prisma/client';
 import {
   CreateTransactionDto,
   DeleteTransactionDto,
 } from './dto/transaction.dto';
+import { OperationDto } from './dto/operation.dto';
 
 @Controller('finance')
 export class FinanceController {
@@ -26,6 +29,64 @@ export class FinanceController {
   getAll(): Promise<Transaction[]> {
     this.logger.log('Получение всех транзакций');
     return this.financeService.getAll();
+  }
+
+  @Post('/operation')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async createOperationByTransaction(
+    @Body() data: OperationDto,
+  ): Promise<Operation> {
+    try {
+      const result =
+        await this.financeService.createOperationByTransaction(data);
+      this.logger.log(
+        `Успешное создание операции для транзакции с id: ${data.transactionId}`,
+      );
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `Ошибка при создании операции для транзакции с id: ${data.transactionId}`,
+      );
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'По такому id транзакции не существует',
+        },
+        HttpStatus.NOT_FOUND,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
+  @Get('/price/:id')
+  async getPriceById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ price: number }> {
+    try {
+      const result = await this.financeService.getPriceById({ id });
+      this.logger.log(`Получение трат по id: ${id}`);
+      let count = 0;
+      if (result?.operations?.length) {
+        result.operations.forEach((op) => {
+          count += op.value;
+        });
+      }
+      return { price: count };
+    } catch (error) {
+      this.logger.error('Ошибка при получении транзакции');
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'По такому id транзакции не существует',
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
   @Post()
