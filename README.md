@@ -22,6 +22,17 @@
 
 ## Backend
 
+Примерный файл .env
+
+```toml
+PORT=4000
+POSTGRES_USER=test_user
+POSTGRES_PASSWORD=secret
+POSTGRES_DB=finance
+
+DATABASE_URL="postgresql://test_user:secret@localhost:5432/finance"
+```
+
 ### /route
 
 - `GET /finance` - получение всех `Transaction`
