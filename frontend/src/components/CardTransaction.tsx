@@ -30,29 +30,6 @@ export function CardTransaction() {
 	// const [isModalPricesOpen, setIsModalPricesOpen] = useState(false);
 	const [transaction, setTransaction] = useState<Transaction[]>();
 	const [prices, setPrices] = useState<Record<number, number>>({});
-	const [formData, setFormData] = useState({ type: '', value: '' });
-	const [loading, setLoading] = useState(false);
-
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setFormData({ ...formData, [e.target.name]: e.target.value });
-	};
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setLoading(true);
-
-		try {
-			await axios.post('http://localhost:4000/finance', formData);
-			setIsModalOpen(false);
-			setFormData({ type: '', value: '' });
-			// Перезагрузить транзакции
-			await axios.get('http://localhost:4000/finance').then((res) => setTransaction(res.data));
-		} catch (error) {
-			console.error('Ошибка создания транзакции:', error);
-		} finally {
-			setLoading(false);
-		}
-	};
 
 	useEffect(() => {
 		axios
