@@ -24,7 +24,7 @@
 
 Примерный файл .env
 
-```toml
+```
 PORT=4000
 POSTGRES_USER=test_user
 POSTGRES_PASSWORD=secret
