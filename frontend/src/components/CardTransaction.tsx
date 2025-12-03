@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import ModelTransaction from './ModelTransaction';
+import Model from './Model';
 
 enum TypeOperations {
 	DELIVERY_FOODS = 'DELIVERY_FOODS',
@@ -11,7 +11,7 @@ enum TypeOperations {
 }
 
 type Operation = {
-	id: number;
+	id?: number;
 	label: string;
 	value: number;
 	type: TypeOperations;
@@ -27,7 +27,7 @@ type Transaction = {
 
 export function CardTransaction() {
 	const [isModalTransactionOpen, setIsModalTransactionOpen] = useState(false);
-	// const [isModalPricesOpen, setIsModalPricesOpen] = useState(false);
+	const [isModalPricesOpen, setIsModalPricesOpen] = useState(false);
 	const [transaction, setTransaction] = useState<Transaction[]>();
 	const [prices, setPrices] = useState<Record<number, number>>({});
 
@@ -53,10 +53,13 @@ export function CardTransaction() {
 	return (
 		<div className="allTransactions flex mx-4 my-2 text-2xl">
 			{isModalTransactionOpen && (
-				<ModelTransaction
-					isOpen={isModalTransactionOpen}
-					onClose={() => setIsModalTransactionOpen(false)}>
+				<Model isOpen={isModalTransactionOpen} onClose={() => setIsModalTransactionOpen(false)}>
 					<form className="space-y-4">
+						<input
+							type="text"
+							placeholder="Название"
+							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						/>
 						<input
 							type="text"
 							placeholder="Тип (DELIVERY_FOODS...)"
@@ -81,7 +84,36 @@ export function CardTransaction() {
 							</button>
 						</div>
 					</form>
-				</ModelTransaction>
+				</Model>
+			)}
+			{isModalPricesOpen && (
+				<Model isOpen={isModalPricesOpen} onClose={() => setIsModalPricesOpen(false)}>
+					<form className="space-y-4">
+						<input
+							type="text"
+							placeholder="Тип (DELIVERY_FOODS...)"
+							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						/>
+						<input
+							type="number"
+							placeholder="Значение"
+							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						/>
+						<div className="flex gap-3 pt-2">
+							<button
+								type="button"
+								onClick={() => setIsModalPricesOpen(false)}
+								className="flex-1 bg-gray-300 hover:bg-gray-400 p-3 rounded-lg transition-colors">
+								Отмена
+							</button>
+							<button
+								type="submit"
+								className="flex-1 bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-colors">
+								Создать
+							</button>
+						</div>
+					</form>
+				</Model>
 			)}
 			{transaction
 				? transaction.map((e) => (
@@ -124,7 +156,9 @@ export function CardTransaction() {
 									</div>
 								))}
 								<div className="operation mb-2 mx-8 bg-gray-50 px-4 py-2 rounded-2xl opacity-15">
-									<div className="flex justify-center text-black cursor-pointer">
+									<div
+										onClick={() => setIsModalTransactionOpen(true)}
+										className="flex justify-center text-black cursor-pointer">
 										<i className="text-4xl fa-solid fa-circle-plus"></i>
 									</div>
 								</div>
@@ -134,7 +168,7 @@ export function CardTransaction() {
 				: 'Загрузка...'}
 			<div className="transaction bg-gray-700 w-fit m-2 p-1 rounded-2xl flex justify-center items-center">
 				<div
-					onClick={() => setIsModalTransactionOpen(true)}
+					onClick={() => setIsModalPricesOpen(true)}
 					className="info-transaction bg-gray-50 px-4 py-2 rounded-2xl opacity-15 cursor-pointer">
 					<div>
 						<i className="text-4xl fa-solid fa-circle-plus text-black"></i>

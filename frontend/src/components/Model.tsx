@@ -1,11 +1,11 @@
-type ModelTransactionProps = {
+type ModelProps = {
 	isOpen: boolean;
 	onClose: () => void;
 	title?: string;
 	children: React.ReactNode;
 };
 
-export function ModelTransaction({ isOpen, onClose, title, children }: ModelTransactionProps) {
+export function Model({ isOpen, onClose, title, children }: ModelProps) {
 	if (!isOpen) return null;
 
 	return (
@@ -27,4 +27,4 @@ export function ModelTransaction({ isOpen, onClose, title, children }: ModelTran
 	);
 }
 
-export default ModelTransaction;
+export default Model;
