@@ -22,7 +22,7 @@ export class DeleteTransactionDto {
 }
 
 export class CreateTransactionDto {
-  @IsNumber({}, { message: 'цена должно быть числом' })
+  @IsNumber({}, { message: 'цена должна быть числом' })
   @IsNotEmpty({ message: 'цена обязательна' })
   value: number;
 
@@ -37,11 +37,11 @@ export class CreateTransactionDto {
 }
 
 export class OperationDto {
-  @IsString({ message: 'название должна быть строкой' })
-  @IsNotEmpty({ message: 'название обязательна' })
+  @IsString({ message: 'название должно быть строкой' })
+  @IsNotEmpty({ message: 'название обязательно' })
   label: string;
 
-  @IsNumber({}, { message: 'цена должно быть числом' })
+  @IsNumber({}, { message: 'цена должна быть числом' })
   @IsNotEmpty({ message: 'цена обязательна' })
   value: number;
 

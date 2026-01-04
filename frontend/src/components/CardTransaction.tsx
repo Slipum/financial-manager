@@ -30,13 +30,17 @@ export function CardTransaction() {
 	const [isModalPricesOpen, setIsModalPricesOpen] = useState(false);
 	const [transaction, setTransaction] = useState<Transaction[]>();
 	const [prices, setPrices] = useState<Record<number, number>>({});
+	const [refresh, setRefresh] = useState(false);
+
+	const [valueTransaction, setValueTransaction] = useState<number | null>(null);
+	const [dateCloseTransaction, setDateCloseTransaction] = useState<Date | null>(null);
 
 	useEffect(() => {
 		axios
 			.get('http://localhost:4000/finance')
 			.then((res) => setTransaction(res.data))
 			.catch((err) => console.error(err));
-	}, []);
+	}, [refresh]);
 
 	useEffect(() => {
 		if (!transaction) return;
@@ -50,36 +54,68 @@ export function CardTransaction() {
 		});
 	}, [transaction]);
 
+	const handleCreateTransaction = async () => {
+		try {
+			const data = {
+				value: valueTransaction,
+				closeDate: dateCloseTransaction,
+			};
+			if (valueTransaction != null && dateCloseTransaction != null) {
+				await axios.post('http://localhost:4000/finance', data);
+			}
+
+			setRefresh(!refresh);
+
+			setValueTransaction(null);
+			setDateCloseTransaction(null);
+			setIsModalPricesOpen(false);
+		} catch (err) {
+			console.error(err);
+		}
+		setIsModalTransactionOpen(false);
+	};
+
 	return (
 		<div className="allTransactions flex mx-4 my-2 text-2xl">
 			{isModalTransactionOpen && (
 				<Model isOpen={isModalTransactionOpen} onClose={() => setIsModalTransactionOpen(false)}>
 					<form className="space-y-4">
+						<label htmlFor="name-tag">Название</label>
 						<input
+							name="name-tag"
 							type="text"
-							placeholder="Название"
+							placeholder="Steam"
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
-						<input
-							type="text"
-							placeholder="Тип (DELIVERY_FOODS...)"
+						<label htmlFor="type">Тип транзакции</label>
+						<select
+							name="type"
+							id=""
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-						/>
+						>
+							<option value="0">DELIVERY_FOODS</option>
+							<option value="1">PERSONAL_PURCHASES</option>
+							<option value="2">OTHERS</option>
+						</select>
+						<label htmlFor="value">Потрачено</label>
 						<input
+							name="value"
 							type="number"
-							placeholder="Значение"
+							placeholder="0"
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
 						<div className="flex gap-3 pt-2">
 							<button
 								type="button"
 								onClick={() => setIsModalTransactionOpen(false)}
-								className="flex-1 bg-gray-300 hover:bg-gray-400 p-3 rounded-lg transition-colors">
+								className="flex-1 bg-gray-300 hover:bg-gray-400 p-3 rounded-lg transition-colors"
+							>
 								Отмена
 							</button>
 							<button
 								type="submit"
-								className="flex-1 bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-colors">
+								className="flex-1 bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-colors"
+							>
 								Создать
 							</button>
 						</div>
@@ -88,31 +124,40 @@ export function CardTransaction() {
 			)}
 			{isModalPricesOpen && (
 				<Model isOpen={isModalPricesOpen} onClose={() => setIsModalPricesOpen(false)}>
-					<form className="space-y-4">
+					<div className="space-y-4">
+						<label htmlFor="value">Зачисленно</label>
 						<input
-							type="text"
-							placeholder="Тип (DELIVERY_FOODS...)"
+							name="value"
+							type="number"
+							onChange={(e) => setValueTransaction(Number(e.target.value))}
+							placeholder="Значение"
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
+						<label htmlFor="date">Дата окончания транзакции</label>
 						<input
-							type="number"
-							placeholder="Значение"
+							name="date"
+							type="date"
+							onChange={(e) => setDateCloseTransaction(new Date(e.target.value))}
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
 						<div className="flex gap-3 pt-2">
 							<button
 								type="button"
 								onClick={() => setIsModalPricesOpen(false)}
-								className="flex-1 bg-gray-300 hover:bg-gray-400 p-3 rounded-lg transition-colors">
+								className="flex-1 bg-gray-300 hover:bg-gray-400 p-3 rounded-lg transition-colors"
+							>
 								Отмена
 							</button>
 							<button
-								type="submit"
-								className="flex-1 bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-colors">
+								type="button"
+								onClick={handleCreateTransaction}
+								disabled={!valueTransaction || !dateCloseTransaction}
+								className="flex-1 bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-colors"
+							>
 								Создать
 							</button>
 						</div>
-					</form>
+					</div>
 				</Model>
 			)}
 			{transaction
@@ -124,7 +169,8 @@ export function CardTransaction() {
 									<p
 										className={`underline ${
 											e.value - prices[e.id] < 0 ? 'decoration-red-500' : 'decoration-green-400'
-										}`}>
+										}`}
+									>
 										Итог: {e.value - prices[e.id]}
 									</p>
 								</div>
@@ -136,7 +182,8 @@ export function CardTransaction() {
 								{e.operations.map((op) => (
 									<div
 										key={op.id}
-										className="operation mb-2 mx-8 bg-blue-400 px-4 py-2 rounded-2xl">
+										className="operation mb-2 mx-8 bg-blue-400 px-4 py-2 rounded-2xl"
+									>
 										<div className="">Id: {op.id}</div>
 										<div className="">Label: {op.label}</div>
 										<div className="flex gap-2">
@@ -148,7 +195,8 @@ export function CardTransaction() {
 														: op.type === 'PERSONAL_PURCHASES'
 														? 'bg-yellow-400'
 														: 'bg-gray-400'
-												} rounded-xl px-2 py-1`}>
+												} rounded-xl px-2 py-1`}
+											>
 												{op.type}
 											</p>
 										</div>
@@ -158,7 +206,8 @@ export function CardTransaction() {
 								<div className="operation mb-2 mx-8 bg-gray-50 px-4 py-2 rounded-2xl opacity-15">
 									<div
 										onClick={() => setIsModalTransactionOpen(true)}
-										className="flex justify-center text-black cursor-pointer">
+										className="flex justify-center text-black cursor-pointer"
+									>
 										<i className="text-4xl fa-solid fa-circle-plus"></i>
 									</div>
 								</div>
@@ -169,7 +218,8 @@ export function CardTransaction() {
 			<div className="transaction bg-gray-700 w-fit m-2 p-1 rounded-2xl flex justify-center items-center">
 				<div
 					onClick={() => setIsModalPricesOpen(true)}
-					className="info-transaction bg-gray-50 px-4 py-2 rounded-2xl opacity-15 cursor-pointer">
+					className="info-transaction bg-gray-50 px-4 py-2 rounded-2xl opacity-15 cursor-pointer"
+				>
 					<div>
 						<i className="text-4xl fa-solid fa-circle-plus text-black"></i>
 					</div>
