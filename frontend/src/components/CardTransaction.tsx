@@ -175,8 +175,22 @@ export function CardTransaction() {
 									</p>
 								</div>
 								<div className="">Value: {e.value}</div>
-								<div className="">Create date: {new Date(e.createDate).toLocaleString()}</div>
-								<div className="">Close date: {new Date(e.closeDate).toLocaleString()}</div>
+								<div className="">
+									Create date:{' '}
+									{new Date(e.createDate).toLocaleDateString('ru-RU', {
+										day: 'numeric',
+										month: 'short',
+										year: 'numeric',
+									})}
+								</div>
+								<div className="">
+									Close date:{' '}
+									{new Date(e.closeDate).toLocaleDateString('ru-RU', {
+										day: 'numeric',
+										month: 'short',
+										year: 'numeric',
+									})}
+								</div>
 							</div>
 							<div className="allOperations m-2">
 								{e.operations.map((op) => (
