@@ -35,6 +35,11 @@ export function CardTransaction() {
 	const [valueTransaction, setValueTransaction] = useState<number | null>(null);
 	const [dateCloseTransaction, setDateCloseTransaction] = useState<Date | null>(null);
 
+	const [typeTransaction, setTypeTransaction] = useState('0');
+	const [addLabelTransaction, setAddLabelTransaction] = useState<string | null>(null);
+	const [addValueTransaction, setAddValueTransaction] = useState<number | null>(null);
+	const [idTransaction, setIdTransaction] = useState(0);
+
 	useEffect(() => {
 		axios
 			.get('http://localhost:4000/finance')
@@ -72,25 +77,51 @@ export function CardTransaction() {
 		} catch (err) {
 			console.error(err);
 		}
-		setIsModalTransactionOpen(false);
+	};
+
+	const handleAddTransaction = async () => {
+		try {
+			const data = {
+				label: addLabelTransaction,
+				value: addValueTransaction,
+				type: typeTransaction,
+				transactionId: idTransaction,
+			};
+			console.log(data);
+			if (addLabelTransaction != null && addValueTransaction != null && typeTransaction != null) {
+				await axios.post('http://localhost:4000/finance/operation', data);
+			}
+
+			setRefresh(!refresh);
+
+			setTypeTransaction('0');
+			setAddLabelTransaction(null);
+			setAddValueTransaction(null);
+
+			setIsModalTransactionOpen(false);
+		} catch (err) {
+			console.error(err);
+		}
 	};
 
 	return (
 		<div className="allTransactions flex mx-4 my-2 text-2xl">
 			{isModalTransactionOpen && (
 				<Model isOpen={isModalTransactionOpen} onClose={() => setIsModalTransactionOpen(false)}>
-					<form className="space-y-4">
+					<div className="space-y-4">
 						<label htmlFor="name-tag">Название</label>
 						<input
 							name="name-tag"
 							type="text"
 							placeholder="Steam"
+							onChange={(e) => setAddLabelTransaction(e.target.value)}
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
 						<label htmlFor="type">Тип транзакции</label>
 						<select
 							name="type"
-							id=""
+							value={typeTransaction}
+							onChange={(e) => setTypeTransaction(getTypeTransaction(e.target.value))}
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						>
 							<option value="0">DELIVERY_FOODS</option>
@@ -102,6 +133,7 @@ export function CardTransaction() {
 							name="value"
 							type="number"
 							placeholder="0"
+							onChange={(e) => setAddValueTransaction(Number(e.target.value))}
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						/>
 						<div className="flex gap-3 pt-2">
@@ -113,13 +145,14 @@ export function CardTransaction() {
 								Отмена
 							</button>
 							<button
-								type="submit"
+								type="button"
+								onClick={handleAddTransaction}
 								className="flex-1 bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg transition-colors"
 							>
 								Создать
 							</button>
 						</div>
-					</form>
+					</div>
 				</Model>
 			)}
 			{isModalPricesOpen && (
@@ -219,7 +252,10 @@ export function CardTransaction() {
 								))}
 								<div className="operation mb-2 mx-8 bg-gray-50 px-4 py-2 rounded-2xl opacity-15">
 									<div
-										onClick={() => setIsModalTransactionOpen(true)}
+										onClick={() => {
+											setIsModalTransactionOpen(true);
+											setIdTransaction(e.id);
+										}}
 										className="flex justify-center text-black cursor-pointer"
 									>
 										<i className="text-4xl fa-solid fa-circle-plus"></i>
@@ -244,3 +280,14 @@ export function CardTransaction() {
 }
 
 export default CardTransaction;
+
+function getTypeTransaction(value: string) {
+	switch (value) {
+		case '0':
+			return 'DELIVERY_FOODS';
+		case '1':
+			return 'PERSONAL_PURCHASES';
+		default:
+			return 'OTHERS';
+	}
+}
