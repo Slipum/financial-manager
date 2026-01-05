@@ -64,3 +64,8 @@ DATABASE_URL="postgresql://test_user:secret@localhost:5432/finance"
 	"id": 1
 }
 ```
+
+## TO-DO
+
+- [ ] Сделать крестики на карточках транзакций и операций для их удаления
+- [ ] Обновить дизайн (сделать liquid glass ui)

@@ -105,7 +105,7 @@ export function CardTransaction() {
 	};
 
 	return (
-		<div className="allTransactions flex mx-4 my-2 text-2xl">
+		<div className="allTransactions flex mx-4 my-2 text-2xl flex-wrap">
 			{isModalTransactionOpen && (
 				<Model isOpen={isModalTransactionOpen} onClose={() => setIsModalTransactionOpen(false)}>
 					<div className="space-y-4">
@@ -121,12 +121,12 @@ export function CardTransaction() {
 						<select
 							name="type"
 							value={typeTransaction}
-							onChange={(e) => setTypeTransaction(getTypeTransaction(e.target.value))}
+							onChange={(e) => setTypeTransaction(e.target.value)}
 							className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 						>
-							<option value="0">DELIVERY_FOODS</option>
-							<option value="1">PERSONAL_PURCHASES</option>
-							<option value="2">OTHERS</option>
+							<option value="DELIVERY_FOODS">DELIVERY_FOODS</option>
+							<option value="PERSONAL_PURCHASES">PERSONAL_PURCHASES</option>
+							<option value="OTHERS">OTHERS</option>
 						</select>
 						<label htmlFor="value">Потрачено</label>
 						<input
@@ -195,10 +195,17 @@ export function CardTransaction() {
 			)}
 			{transaction
 				? transaction.map((e) => (
-						<div key={e.id} className="transaction bg-gray-700 w-fit m-2 p-1 rounded-2xl">
+						<div
+							key={e.id}
+							className="transaction bg-gray-700 
+                 w-full sm:w-[calc(50%-0.25rem)] 
+                 md:w-[calc(33.333%-0.666rem)] 
+                 min-w-[250px] 
+                 m-1 p-4 rounded-2xl shrink-0 hover:shadow-lg transition-all"
+						>
 							<div className="info-transaction bg-indigo-500 px-4 py-2 rounded-2xl m-2">
 								<div className="flex justify-between">
-									<p>Id: {e.id}</p>|<p>Цена: {prices[e.id] ?? 'Загрузка...'}</p>|
+									<p>Цена: {prices[e.id] ?? 'Загрузка...'}</p>
 									<p
 										className={`underline ${
 											e.value - prices[e.id] < 0 ? 'decoration-red-500' : 'decoration-green-400'
@@ -207,7 +214,7 @@ export function CardTransaction() {
 										Итог: {e.value - prices[e.id]}
 									</p>
 								</div>
-								<div className="">Value: {e.value}</div>
+								<div className="">{e.value} ₽</div>
 								<div className="">
 									Create date:{' '}
 									{new Date(e.createDate).toLocaleDateString('ru-RU', {
@@ -231,10 +238,8 @@ export function CardTransaction() {
 										key={op.id}
 										className="operation mb-2 mx-8 bg-blue-400 px-4 py-2 rounded-2xl"
 									>
-										<div className="">Id: {op.id}</div>
-										<div className="">Label: {op.label}</div>
+										<div className="font-black">{op.label}</div>
 										<div className="flex gap-2">
-											<p className={`px-2 py-1`}>Type:</p>
 											<p
 												className={`${
 													op.type === 'DELIVERY_FOODS'
@@ -242,12 +247,12 @@ export function CardTransaction() {
 														: op.type === 'PERSONAL_PURCHASES'
 														? 'bg-yellow-400'
 														: 'bg-gray-400'
-												} rounded-xl px-2 py-1`}
+												} rounded-xl px-2 py-1 left-[4px]`}
 											>
 												{op.type}
 											</p>
 										</div>
-										<div className="">Value: {op.value}</div>
+										<div className="">{op.value} ₽</div>
 									</div>
 								))}
 								<div className="operation mb-2 mx-8 bg-gray-50 px-4 py-2 rounded-2xl opacity-15">
@@ -280,14 +285,3 @@ export function CardTransaction() {
 }
 
 export default CardTransaction;
-
-function getTypeTransaction(value: string) {
-	switch (value) {
-		case '0':
-			return 'DELIVERY_FOODS';
-		case '1':
-			return 'PERSONAL_PURCHASES';
-		default:
-			return 'OTHERS';
-	}
-}
