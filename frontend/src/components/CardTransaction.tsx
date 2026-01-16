@@ -87,7 +87,6 @@ export function CardTransaction() {
 				type: typeTransaction,
 				transactionId: idTransaction,
 			};
-			console.log(data);
 			if (addLabelTransaction != null && addValueTransaction != null && typeTransaction != null) {
 				await axios.post('http://localhost:4000/finance/operation', data);
 			}
