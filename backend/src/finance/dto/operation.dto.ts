@@ -7,11 +7,11 @@ export enum TypeOperations {
 }
 
 export class OperationDto {
-  @IsString({ message: 'название должна быть строкой' })
-  @IsNotEmpty({ message: 'название обязательна' })
+  @IsString({ message: 'название должно быть строкой' })
+  @IsNotEmpty({ message: 'название обязательно' })
   label: string;
 
-  @IsNumber({}, { message: 'цена должно быть числом' })
+  @IsNumber({}, { message: 'цена должна быть числом' })
   @IsNotEmpty({ message: 'цена обязательна' })
   value: number;
 
@@ -21,7 +21,7 @@ export class OperationDto {
   })
   type: TypeOperations;
 
-  @IsNumber({}, { message: 'Id транзакции должна быть числом' })
-  @IsNotEmpty({ message: 'Id транзакции обязательна' })
+  @IsNumber({}, { message: 'Id транзакции должно быть числом' })
+  @IsNotEmpty({ message: 'Id транзакции обязателен' })
   transactionId: number;
 }

@@ -22,6 +22,17 @@
 
 ## Backend
 
+Примерный файл .env
+
+```
+PORT=4000
+POSTGRES_USER=test_user
+POSTGRES_PASSWORD=secret
+POSTGRES_DB=finance
+
+DATABASE_URL="postgresql://test_user:secret@localhost:5432/finance"
+```
+
 ### /route
 
 - `GET /finance` - получение всех `Transaction`
@@ -53,3 +64,9 @@
 	"id": 1
 }
 ```
+
+## TO-DO
+
+- [ ] Сделать крестики на карточках транзакций и операций для их удаления
+- [ ] Обновить дизайн (сделать liquid glass ui)
+- [x] Добавить dockerfile и конфиг для docker compose
