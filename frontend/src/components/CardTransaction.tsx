@@ -42,7 +42,7 @@ export function CardTransaction() {
 
 	useEffect(() => {
 		axios
-			.get('http://localhost:4000/finance')
+			.get(`/api/finance`)
 			.then((res) => setTransaction(res.data))
 			.catch((err) => console.error(err));
 	}, [refresh]);
@@ -51,7 +51,7 @@ export function CardTransaction() {
 		if (!transaction) return;
 		transaction.forEach(async (e) => {
 			try {
-				const response = await axios.get(`http://localhost:4000/finance/price/${e.id}`);
+				const response = await axios.get(`/api/finance/price/${e.id}`);
 				setPrices((prev) => ({ ...prev, [e.id]: response.data.price }));
 			} catch (error) {
 				console.error('Ошибка запроса цены для id ', e.id, error);
@@ -66,7 +66,7 @@ export function CardTransaction() {
 				closeDate: dateCloseTransaction,
 			};
 			if (valueTransaction != null && dateCloseTransaction != null) {
-				await axios.post('http://localhost:4000/finance', data);
+				await axios.post(`/api/finance`, data);
 			}
 
 			setRefresh(!refresh);
@@ -88,7 +88,7 @@ export function CardTransaction() {
 				transactionId: idTransaction,
 			};
 			if (addLabelTransaction != null && addValueTransaction != null && typeTransaction != null) {
-				await axios.post('http://localhost:4000/finance/operation', data);
+				await axios.post(`/api/finance/operation`, data);
 			}
 
 			setRefresh(!refresh);
@@ -244,9 +244,9 @@ export function CardTransaction() {
 													op.type === 'DELIVERY_FOODS'
 														? 'bg-green-400'
 														: op.type === 'PERSONAL_PURCHASES'
-														? 'bg-yellow-400'
-														: 'bg-gray-400'
-												} rounded-xl px-2 py-1 left-[4px]`}
+															? 'bg-yellow-400'
+															: 'bg-gray-400'
+												} rounded-xl px-2 py-1 left-1`}
 											>
 												{op.type}
 											</p>
@@ -267,7 +267,7 @@ export function CardTransaction() {
 								</div>
 							</div>
 						</div>
-				  ))
+					))
 				: 'Загрузка...'}
 			<div className="transaction bg-gray-700 w-fit m-2 p-1 rounded-2xl flex justify-center items-center">
 				<div
