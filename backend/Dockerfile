@@ -27,5 +27,6 @@ WORKDIR /home/node
 COPY --from=builder --chown=node:node /app/package*.json ./
 COPY --from=builder --chown=node:node /app/node_modules/ ./node_modules/
 COPY --from=builder --chown=node:node /app/dist/ ./dist/
+COPY --from=builder --chown=node:node /app/prisma ./prisma
 
-CMD ["node", "dist/src/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
