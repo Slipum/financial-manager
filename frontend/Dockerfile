@@ -4,6 +4,10 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 FROM node:24-alpine as builder
+
+ARG BACKEND_URL
+ENV BACKEND_URL=${BACKEND_URL}
+
 WORKDIR /finance
 COPY . .
 COPY --from=dependencies /finance/node_modules ./node_modules

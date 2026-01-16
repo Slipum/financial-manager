@@ -1,6 +1,6 @@
 FROM node:24-alpine as builder
 
-ENV NODE_ENV build
+ENV NODE_ENV=build
 
 USER node
 WORKDIR /app
@@ -8,6 +8,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
 COPY --chown=node:node . .
 RUN npx prisma generate \
     && npm run build \
@@ -17,7 +19,7 @@ RUN npx prisma generate \
 
 FROM node:24-alpine
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 USER node
 WORKDIR /home/node
