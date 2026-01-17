@@ -12,6 +12,7 @@ ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 COPY --chown=node:node . .
 RUN npx prisma generate \
+		npx prisma db push \
     && npm run build \
     && npm prune --omit=dev
 
@@ -27,9 +28,5 @@ WORKDIR /home/node
 COPY --from=builder --chown=node:node /app/package*.json ./
 COPY --from=builder --chown=node:node /app/node_modules/ ./node_modules/
 COPY --from=builder --chown=node:node /app/dist/ ./dist/
-COPY --from=builder --chown=node:node /app/prisma ./prisma
-COPY --from=builder --chown=node:node /app/prisma.config.ts ./
-
-RUN npx prisma db push
 
 CMD ["node", "dist/src/main.js"]
