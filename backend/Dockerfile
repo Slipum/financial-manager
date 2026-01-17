@@ -11,8 +11,8 @@ RUN npm ci
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 COPY --chown=node:node . .
-RUN npx prisma generate \
-		npx prisma db push \
+RUN npx prisma migrate deploy \
+		npx prisma generate \
     && npm run build \
     && npm prune --omit=dev
 
