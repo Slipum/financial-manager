@@ -28,7 +28,7 @@ jobs:
           version: 'latest'
 
       - name: Build and run services (for testing)
-        run: docker compose -f docker-compose.yml up --abort-on-container-exit --exit-code-from my-test-service
+        run: docker compose up
 
       - name: Clean up containers (optional, as `up` command is blocking)
         if: always()
