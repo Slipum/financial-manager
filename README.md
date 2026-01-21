@@ -25,12 +25,13 @@
 Примерный файл .env
 
 ```
-PORT=4000
 POSTGRES_USER=test_user
 POSTGRES_PASSWORD=secret
 POSTGRES_DB=finance
 
-DATABASE_URL="postgresql://test_user:secret@localhost:5432/finance"
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+
+PUBLIC_FRONTEND_PORT=3010
 ```
 
 ### /route
