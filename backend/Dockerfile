@@ -11,8 +11,7 @@ RUN npm ci
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 COPY --chown=node:node . .
-RUN npx prisma migrate deploy \
-		npx prisma generate \
+RUN npx prisma generate \
     && npm run build \
     && npm prune --omit=dev
 
@@ -28,5 +27,10 @@ WORKDIR /home/node
 COPY --from=builder --chown=node:node /app/package*.json ./
 COPY --from=builder --chown=node:node /app/node_modules/ ./node_modules/
 COPY --from=builder --chown=node:node /app/dist/ ./dist/
+COPY --from=builder --chown=node:node ./app/prisma ./prisma
+COPY --from=builder --chown=node:node ./app/prisma.config.ts ./
 
-CMD ["node", "dist/src/main.js"]
+EXPOSE 4000
+
+COPY --chown=node:node entrypoint.sh ./
+CMD ["/bin/sh", "./entrypoint.sh"]
