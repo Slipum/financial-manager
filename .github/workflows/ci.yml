@@ -22,14 +22,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Docker Compose
+      - name: Setup Docker Compose
         uses: docker/setup-compose-action@v1
         with:
           version: 'latest'
 
-      - name: Build and run services (for testing)
-        run: docker compose up
+      - name: Build and run services
+        run: docker compose up -d --build
 
-      - name: Clean up containers (optional, as `up` command is blocking)
+      - name: Wait for frontend to become healthy
+        run: |
+          echo "Waiting for frontend to become healthy..."
+          for i in {1..30}; do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' frontend)
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Frontend is healthy — system is up"
+              exit 0
+            fi
+            sleep 5
+          done
+
+          echo "Frontend did not become healthy"
+          docker compose logs
+          exit 1
+
+      - name: Shutdown
         if: always()
-        run: docker compose down
+        run: docker compose down -v
