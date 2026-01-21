@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  publish:
+    name: CI Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Docker Compose
+        uses: docker/setup-compose-action@v2
+        with:
+          version: 'latest'
+
+      - name: Build and run services (for testing)
+        run: docker compose -f docker-compose.yml up --abort-on-container-exit --exit-code-from my-test-service
+
+      - name: Clean up containers (optional, as `up` command is blocking)
+        if: always()
+        run: docker compose down
